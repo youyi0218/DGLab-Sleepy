@@ -42,6 +42,10 @@
 | `sleepy_page_desc`        | str  | `(用户名)'s Online Status Page`   | 网页描述 *(主要用于 SEO)*                                                                                    |
 | `sleepy_page_favicon`     | str  | `./static/favicon.ico`            | 网页的图标 (`.png` 或 `.ico` 图片) 路径，可以为绝对路径或相对路径                                            |
 | `sleepy_page_background`  | str  | `https://imgapi.siiway.top/image` | 背景图片地址，可以使用网上的图片 API 或单张图片 *(默认为 [siiway/imgapi](https://github.com/siiway/imgapi))* |
+| `sleepy_page_background_local` | bool | false | 是否使用本地背景图片，设为 `true` 时将从 `sleepy_page_background_folder` 指定的文件夹中选择图片 |
+| `sleepy_page_background_folder` | str | `./background` | 本地背景图片文件夹路径，支持相对路径或绝对路径 |
+| `sleepy_page_background_random` | bool | true | 是否随机选择本地背景图片，设为 `false` 时将使用 `sleepy_page_background_index` 指定的图片 |
+| `sleepy_page_background_index` | int | 1 | 当不使用随机背景时，指定使用的背景图片索引（从1开始） |
 | `sleepy_page_learn_more`  | str  | `GitHub Repo`                     | 网页底部链接的**显示文字**                                                                                   |
 | `sleepy_page_repo`        | str  | `https://github.com/sleepy-project/sleepy`  | 网页底部链接的**目标** *(默认为本 repo 地址)*                                                                |
 | `sleepy_page_more_text`   | str  | ` `                               | 网页底部链接上方插入的文字 (**支持 HTML**，可以插入 统计代码 / 备案号 等)                                    |
@@ -99,6 +103,10 @@ SLEEPY_PAGE_DESC="Sleepy Project"  # 页面描述
 SLEEPY_PAGE_USER="User"  # 用户名
 SLEEPY_PAGE_FAVICON="/static/favicon.ico"  # 网站图标
 SLEEPY_PAGE_BACKGROUND="https://api.dujin.org/bing/1920.php"  # 背景图片
+SLEEPY_PAGE_BACKGROUND_LOCAL="true"  # 是否使用本地背景图片
+SLEEPY_PAGE_BACKGROUND_FOLDER="./background"  # 本地背景图片文件夹
+SLEEPY_PAGE_BACKGROUND_RANDOM="true"  # 是否随机选择本地背景图片
+SLEEPY_PAGE_BACKGROUND_INDEX="1"  # 不使用随机背景时，指定使用的背景图片索引
 SLEEPY_PAGE_REPO="https://github.com/youyi0218/DGLab-Sleepy"  # 仓库链接
 SLEEPY_PAGE_LEARN_MORE="了解更多"  # 了解更多文本
 SLEEPY_PAGE_MORE_TEXT="今日访问量: {visit_today}<br/>本月访问量: {visit_month}<br/>今年访问量: {visit_year}<br/>总访问量: {visit_total}"  # 更多文本

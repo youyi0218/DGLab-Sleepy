@@ -269,7 +269,7 @@ input[type="range"]::-webkit-slider-thumb {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
-}
+} 
 
 @keyframes fadeOut {
   from { opacity: 1; transform: translateY(0); }

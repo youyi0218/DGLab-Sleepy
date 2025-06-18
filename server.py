@@ -2,6 +2,8 @@
 # coding: utf-8
 
 import time
+import os
+import random
 from datetime import datetime
 from functools import wraps  # 用于修饰器
 
@@ -51,6 +53,40 @@ except:
     u.error('Unexpected Error!')
     raise
 
+# --- 背景图片处理函数
+
+def get_background_image():
+    """
+    获取背景图片URL
+    如果启用了本地背景图片，则返回本地图片的URL
+    否则返回env.page.background中的URL
+    """
+    if env.page.background_local:
+        folder = env.page.background_folder
+        # 确保文件夹路径以/结尾
+        if not folder.endswith('/'):
+            folder += '/'
+        
+        # 获取文件夹中的所有图片文件
+        if os.path.exists(folder):
+            image_files = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f)) 
+                          and f.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'))]
+            
+            if image_files:
+                if env.page.background_random:
+                    # 随机选择一张图片
+                    image_file = random.choice(image_files)
+                else:
+                    # 使用指定索引的图片
+                    index = max(1, min(env.page.background_index, len(image_files))) - 1
+                    image_file = image_files[index] if index < len(image_files) else image_files[0]
+                
+                return f'/background/{image_file}'
+        
+        # 如果没有找到图片或文件夹不存在，回退到默认背景
+        u.warning(f"本地背景图片文件夹 {folder} 不存在或没有图片文件，使用默认背景")
+    
+    return env.page.background
 
 # --- Functions
 
@@ -146,13 +182,16 @@ def index():
             visit_year=d.data['metrics']['year'].get('/', 0),
             visit_total=d.data['metrics']['total'].get('/', 0)
         )
+    # 获取背景图片
+    background_url = get_background_image()
     # 返回 html
     return flask.render_template(
         'index.html',
         env=env,
         more_text=more_text,
         status=status,
-        last_updated=d.data['last_updated']
+        last_updated=d.data['last_updated'],
+        background_url=background_url
     ), 200
 
 
@@ -490,6 +529,14 @@ if env.util.steam_enabled:
         ), 200
 
 # --- End
+
+# 添加背景图片静态文件路由
+@app.route('/background/<path:filename>')
+def background_file(filename):
+    """
+    提供背景图片文件的访问
+    """
+    return flask.send_from_directory(env.page.background_folder, filename)
 
 if __name__ == '__main__':
     u.info(f'=============== hi {env.page.user}! ===============')
