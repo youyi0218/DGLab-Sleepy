@@ -20,7 +20,7 @@
 
 ### Preview
 
-个人站点: [died.theyouyi.site](died.theyouyi.site)
+个人站点: 不放了，放群里都被电成皮卡丘了
 
 HuggingFace 部署预览: 没做也不打算做，理论上和原仓库部署方式一样，需求多会考虑接入。
 
