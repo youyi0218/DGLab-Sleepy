@@ -1,4 +1,5 @@
 # 配置项说明
+**郊狼的配置文件请看DGLab.md**
 
 有两种方式修改配置:
 
@@ -73,3 +74,72 @@
 | `sleepy_util_steam_enabled`          | bool | false  | 是否启用新版 Steam 状态 *(iframe 卡片显示，需配置 `sleepy_util_steam_ids`)*              |
 | `sleepy_util_steam_ids`              | str  | ` `    | 你的 Steam 账号 ID *(应为一串数字)*                                                      |
 | `sleepy_util_steam_refresh_interval` | int  | 20000  | 刷新 Steam 状态的频率 (**毫秒**，*建议至少设置为 10000ms，过低可能触发速率限制*)         |
+
+# 环境变量
+
+## 基础
+
+```bash
+# 基础配置
+SLEEPY_SECRET=""  # 用于鉴权的密钥
+SLEEPY_TIMEZONE="Asia/Shanghai"  # 时区
+SLEEPY_DEBUG="false"  # 是否开启调试模式
+
+# DG-Lab API配置
+DGLAB_API_URL="http://localhost:8080/api"  # DG-Lab API的URL
+DGLAB_API_KEY=""  # DG-Lab API的密钥
+```
+
+## 页面配置
+
+```bash
+# 页面配置
+SLEEPY_PAGE_TITLE="Sleepy"  # 页面标题
+SLEEPY_PAGE_DESC="Sleepy Project"  # 页面描述
+SLEEPY_PAGE_USER="User"  # 用户名
+SLEEPY_PAGE_FAVICON="/static/favicon.ico"  # 网站图标
+SLEEPY_PAGE_BACKGROUND="https://api.dujin.org/bing/1920.php"  # 背景图片
+SLEEPY_PAGE_REPO="https://github.com/youyi0218/DGLab-Sleepy"  # 仓库链接
+SLEEPY_PAGE_LEARN_MORE="了解更多"  # 了解更多文本
+SLEEPY_PAGE_MORE_TEXT="今日访问量: {visit_today}<br/>本月访问量: {visit_month}<br/>今年访问量: {visit_year}<br/>总访问量: {visit_total}"  # 更多文本
+```
+
+## 功能开关
+
+```bash
+# 功能开关
+SLEEPY_UTIL_STEAM_ENABLED="false"  # 是否启用 Steam 状态
+SLEEPY_UTIL_STEAM_ID=""  # Steam ID
+SLEEPY_UTIL_METRICS="true"  # 是否启用统计
+SLEEPY_UTIL_HTTPS="false"  # 是否启用 HTTPS
+SLEEPY_UTIL_HTTPS_CERT=""  # HTTPS 证书路径
+SLEEPY_UTIL_HTTPS_KEY=""  # HTTPS 密钥路径
+```
+
+## 页面组件
+
+```bash
+# 页面组件
+SLEEPY_PAGE_MOONLIGHT="true"  # 是否启用月光模式
+SLEEPY_PAGE_LANTERN="false"  # 是否启用灯笼
+SLEEPY_PAGE_CANVAS="true"  # 是否启用粒子效果
+SLEEPY_PAGE_HITOKOTO="true"  # 是否启用一言
+SLEEPY_PAGE_MPLAYER="false"  # 是否启用音乐播放器
+```
+
+## 状态配置
+
+```bash
+# 状态配置
+SLEEPY_STATUS_REFRESH_INTERVAL="5000"  # 刷新间隔 (ms)
+SLEEPY_STATUS_DEVICE_SLICE="20"  # 设备状态截取文字数
+```
+
+## 杂项配置
+
+```bash
+# 杂项配置
+SLEEPY_CHECKDATA_INTERVAL="300"  # 数据检查间隔 (s)
+SLEEPY_PAGE_SORTED="true"  # 是否对设备状态进行排序
+SLEEPY_PAGE_USING_FIRST="true"  # 是否将正在使用的设备放在前面
+```

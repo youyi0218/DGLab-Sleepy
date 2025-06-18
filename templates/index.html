@@ -30,6 +30,11 @@
             <h3><i><b>{{ env.page.user }}'s</b></i> Status:<br><a id="status">{{ status['name'] }}</a></h3>
             <p id="additional-info">{{ status['desc'] | safe }}</p>
             <p id="device-status">[设备状态列表]</p>
+            
+            <div style="height: 10px;"></div>
+            <button onclick="handleButton1Click()" class="dg-btn"><img src="https://dungeon-lab.cn/img/logo-new.png"
+                    alt="DG-LAB" class="text-icon">雷元素攻击！</button>
+            <div style="height: 10px;"></div>
 
             {% if env.util.steam_enabled %}
             <!-- (steam) Steam 状态模块 (iframe) -->
@@ -83,6 +88,208 @@
 
     <script>
         document.getElementById('status').classList.add("{{ status['color'] }}");
+        
+        // 初始化DG-Lab按钮状态
+        document.addEventListener('DOMContentLoaded', function() {
+            const button = document.querySelector('.dg-btn');
+            if (button) {
+                // 默认设置为连续点击模式
+                button.dataset.continuousClick = 'true';
+                button.dataset.processing = 'false';
+                
+                // 尝试获取配置
+                fetch('/dglab/config', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data && typeof data.continuous_click !== 'undefined') {
+                        button.dataset.continuousClick = data.continuous_click.toString();
+                    }
+                })
+                .catch(error => {
+                    console.error('无法获取配置:', error);
+                });
+            }
+        });
+        
+        // DG-Lab 雷元素攻击按钮处理函数
+        function handleButton1Click() {
+            // 显示加载状态
+            const button = document.querySelector('.dg-btn');
+            const originalText = button.innerHTML;
+            
+            // 检查是否已经有一个请求正在处理
+            if (button.dataset.processing === 'true') {
+                return; // 如果按钮正在处理中，不执行任何操作
+            }
+            
+            // 标记按钮为处理中
+            button.dataset.processing = 'true';
+            
+            // 在非连续点击模式下显示"发送中..."
+            // 在连续点击模式下不改变按钮文本
+            const isContinuousClick = button.dataset.continuousClick === 'true';
+            if (!isContinuousClick) {
+                button.innerHTML = '发送中...';
+                button.disabled = true;
+            }
+            
+            // 创建结果显示区域（如果不存在）
+            let resultDiv = document.getElementById('attack-result');
+            if (!resultDiv) {
+                resultDiv = document.createElement('div');
+                resultDiv.id = 'attack-result';
+                resultDiv.style.margin = '10px 0';
+                resultDiv.style.padding = '10px';
+                resultDiv.style.borderRadius = '8px';
+                resultDiv.style.fontWeight = 'bold';
+                button.parentNode.insertBefore(resultDiv, button.nextSibling);
+            }
+            
+            // 发送请求
+            fetch('/dglab/lightning', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // 显示结果
+                if (data.success) {
+                    // 成功消息
+                    resultDiv.style.backgroundColor = 'rgba(0, 128, 0, 0.2)';
+                    resultDiv.style.color = '#006400';
+                    resultDiv.innerHTML = `<div>${data.message}</div>`;
+                    if (data.details) {
+                        resultDiv.innerHTML += `<div style="font-size: 0.9em; margin-top: 5px;">${data.details}</div>`;
+                    }
+                    
+                    // 获取持续时间（毫秒）
+                    let displayDuration = 0;
+                    
+                    // 如果API返回了实际发送的数据，直接使用
+                    if (data.data_sent && data.data_sent.time) {
+                        displayDuration = data.data_sent.time;
+                    } else {
+                        // 否则从详情文本中提取
+                        const detailsText = data.details || '';
+                        const durationMatch = detailsText.match(/持续: (\d+)秒/);
+                        if (durationMatch && durationMatch[1]) {
+                            displayDuration = parseInt(durationMatch[1]) * 1000; // 转换为毫秒
+                        } else {
+                            displayDuration = 3000; // 默认3秒
+                        }
+                    }
+                    
+                    // 设置定时器，在持续时间结束后隐藏结果
+                    setTimeout(() => {
+                        // 使用淡出动画
+                        resultDiv.style.opacity = '0';
+                        setTimeout(() => {
+                            resultDiv.innerHTML = '';
+                            resultDiv.style.backgroundColor = 'transparent';
+                            resultDiv.style.opacity = '1';
+                        }, 500);
+                    }, displayDuration);
+                    
+                    // 更新按钮的连续点击状态
+                    button.dataset.continuousClick = data.continuous_click.toString();
+                    
+                    // 在连续点击模式下不显示"攻击成功"
+                    if (!data.continuous_click) {
+                        button.innerHTML = '⚡ 攻击成功！';
+                    } else {
+                        button.innerHTML = originalText;
+                        button.disabled = false; // 确保按钮在连续点击模式下不被禁用
+                    }
+                    
+                    // 处理连续点击控制
+                    if (!data.continuous_click && data.cooldown_time > 0) {
+                        // 如果不允许连续点击，显示冷却时间
+                        let cooldownSeconds = data.cooldown_time;
+                        button.disabled = true;
+                        button.style.opacity = '0.6';
+                        button.style.cursor = 'not-allowed';
+                        
+                        // 创建冷却计时器
+                        const cooldownInterval = setInterval(() => {
+                            cooldownSeconds--;
+                            button.innerHTML = `冷却中 (${cooldownSeconds}s)`;
+                            
+                            if (cooldownSeconds <= 0) {
+                                clearInterval(cooldownInterval);
+                                button.innerHTML = originalText;
+                                button.disabled = false;
+                                button.style.opacity = '1';
+                                button.style.cursor = 'pointer';
+                                button.dataset.processing = 'false'; // 重置处理状态
+                            }
+                        }, 1000);
+                        
+                        return; // 提前返回，不执行后面的恢复按钮状态代码
+                    }
+                } else {
+                    // 失败消息
+                    button.innerHTML = '❌ 攻击失败！';
+                    resultDiv.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
+                    resultDiv.style.color = '#8B0000';
+                    resultDiv.innerHTML = data.message;
+                    console.error('Error:', data.message);
+                    
+                    // 3秒后隐藏失败消息
+                    setTimeout(() => {
+                        resultDiv.style.opacity = '0';
+                        setTimeout(() => {
+                            resultDiv.innerHTML = '';
+                            resultDiv.style.backgroundColor = 'transparent';
+                            resultDiv.style.opacity = '1';
+                        }, 500);
+                    }, 3000);
+                }
+                
+                // 恢复按钮状态（仅在连续点击模式或失败时执行）
+                if (data.continuous_click) {
+                    // 连续点击模式下立即恢复按钮状态
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    button.dataset.processing = 'false'; // 重置处理状态
+                } else {
+                    // 非连续点击模式下延迟恢复
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                        button.dataset.processing = 'false'; // 重置处理状态
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                button.innerHTML = '发生错误！';
+                resultDiv.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
+                resultDiv.style.color = '#8B0000';
+                resultDiv.innerHTML = '系统错误，请稍后再试';
+                console.error('Error:', error);
+                
+                // 3秒后隐藏错误消息
+                setTimeout(() => {
+                    resultDiv.style.opacity = '0';
+                    setTimeout(() => {
+                        resultDiv.innerHTML = '';
+                        resultDiv.style.backgroundColor = 'transparent';
+                        resultDiv.style.opacity = '1';
+                    }, 500);
+                }, 3000);
+                
+                // 错误情况下立即恢复按钮状态
+                button.innerHTML = originalText;
+                button.disabled = false;
+                button.dataset.processing = 'false'; // 重置处理状态
+            });
+        }
     </script>
     <script src="{{ url_for('static', filename='get.js') }}" defer></script>
 

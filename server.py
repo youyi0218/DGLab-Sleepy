@@ -14,6 +14,10 @@ import env
 import utils as u
 from data import data as data_init
 from setting import status_list
+# 导入DG-Lab API处理模块
+import dglab_api
+# 确保DGLab配置加载
+dglab_api.load_dglab_config()
 
 try:
     # init flask app
@@ -166,6 +170,31 @@ def none():
     返回 204 No Content, 可用于 Uptime Kuma 等工具监控服务器状态使用
     '''
     return '', 204
+
+
+# --- DG-Lab API
+
+@app.route('/dglab/lightning', methods=['POST'])
+def dglab_lightning():
+    '''
+    DG-Lab 雷元素攻击（一键开火功能）
+    - 无需鉴权（可根据需要添加鉴权）
+    - Method: **POST**
+    '''
+    return dglab_api.handle_lightning_attack(), 200
+
+@app.route('/dglab/config', methods=['GET'])
+def dglab_config():
+    '''
+    获取DG-Lab配置
+    - 无需鉴权
+    - Method: **GET**
+    '''
+    config = dglab_api.load_dglab_config()
+    ui_config = {
+        'continuous_click': config.get('ui', {}).get('continuous_click', True)
+    }
+    return u.format_dict(ui_config), 200
 
 
 # --- Read-only

@@ -210,3 +210,68 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--text-color);
   border-radius: 50%;
 }
+
+/* DG-Lab按钮样式 */
+.dg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #4a148c;
+  color: white;
+  padding: clamp(12px, 2vw, 20px) clamp(20px, 3vw, 40px);
+  border-radius: clamp(8px, 1vw, 12px);
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: bold;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+.dg-btn:hover {
+  background-color: #7b1fa2;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dg-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dg-btn:disabled {
+  background-color: #9e9e9e;
+  cursor: not-allowed;
+}
+
+.text-icon {
+  width: clamp(24px, 3vw, 32px);
+  height: clamp(24px, 3vw, 32px);
+  margin-right: clamp(8px, 1vw, 12px);
+}
+
+/* 攻击结果样式 */
+#attack-result {
+  animation: fadeIn 0.5s ease-in-out;
+  transition: all 0.5s ease;
+  font-family: 'Microsoft YaHei', sans-serif;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+  margin: 10px auto !important;
+  line-height: 1.5;
+  text-align: center;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(10px); }
+}

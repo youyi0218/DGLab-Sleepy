@@ -1,0 +1,20 @@
+{
+  "api": {
+    "url": "http://127.0.0.1:8920/api/v2/game/all/action/fire"
+  },
+  "strength": {
+    "min": 1,
+    "max": 30
+  },
+  "time": {
+    "min": 1,
+    "max": 3
+  },
+  "ui": {
+    "continuous_click": true,
+    "cooldown": {
+      "min": 3,
+      "max": 8
+    }
+  }
+} 
