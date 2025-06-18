@@ -16,6 +16,8 @@ git clone --depth=1 -b main https://github.com/youyi0218/DGLab-Sleepy.git
 ```
 git clone https://kkgithub.com/youyi0218/DGLab-Sleepy.git
 ```
+
+下载https://github.com/hyperzlib/DG-Lab-Coyote-Game-Hub的release文件
 2. 安装依赖
 
 ```shell
@@ -41,7 +43,9 @@ sleepy_page_using_first = true # 使用中设备优先显示
 ### 启动
 
 > **使用宝塔面板 (uwsgi) 等部署时，请确定只为本程序分配了 1 个进程, 如设置多个服务进程可能导致数据不同步!!!**
+先启动DG-Lab-Coyote-Game-Hub
 
+再启动本项目
 有两种启动方式:
 
 ```shell
